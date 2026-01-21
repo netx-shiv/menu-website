@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6f8;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logout-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="logout-box">
+    <h4 class="mb-3">Logging out...</h4>
+    <div class="spinner-border text-danger" role="status"></div>
+    <p class="mt-3 text-muted">Please wait</p>
+</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ================= SUPABASE CONFIG ================= */
+const supabaseUrl = "https://ioxvbpthqdbodzrzoobk.supabase.co";
+const supabaseKey = "sb_publishable_N7JaJC0pBOqyl7cqHh8TYw_9YixTH1u";
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+/* ================= LOGOUT LOGIC ================= */
+async function logout() {
+    try {
+        // 1️⃣ Supabase logout (safe even if not logged in)
+        await supabaseClient.auth.signOut();
+    } catch (e) {
+        console.warn("Supabase signout skipped:", e.message);
+    }
+
+    // 2️⃣ Clear OLD login records (your previous system)
+    localStorage.removeItem("adminLoggedIn");
+    localStorage.removeItem("adminId");
+    sessionStorage.clear();
+
+    // 3️⃣ Redirect to login
+    setTimeout(() => {
+        window.location.href = "admin-login.html";
+    }, 1200);
+}
+
+// Run logout immediately
+logout();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card-login {
+      max-width: 420px;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.5s ease-out;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .card-body {
+      padding: 40px;
+    }
+    h3 {
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      padding: 12px 15px;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    .alert {
+      border-radius: 8px;
+      border: none;
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    .input-group-text {
+      background: transparent;
+      border: 2px solid #e0e0e0;
+      border-right: none;
+    }
+    .input-group .form-control {
+      border-left: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card shadow card-login">
+  <div class="card-body">
+    <div class="text-center mb-4">
+    <i class="bi bi-shield-lock" style="font-size: 3rem; color: #667eea;" title=""></i>
+    </div>
+    <h3 class="text-center">Admin Login</h3>
+
+    <div id="errorBox" class="alert alert-danger d-none" role="alert">
+    <i class="bi bi-exclamation-circle"></i> <span id="errorText"></span>
+    </div>
+
+    <form id="loginForm">
+    <div class="mb-3">
+      <label class="form-label"><i class="bi bi-telephone"></i> Mobile Number</label>
+      <input type="tel" id="mobile" class="form-control" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label"><i class="bi bi-key"></i> Password</label>
+      <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+    </div>
+
+    <button type="submit" class="btn btn-danger w-100">
+      <i class="bi bi-box-arrow-in-right"></i> Login
+    </button>
+    </form>
+  </div>
+  </div>
+</div>
+
+<!-- SUPABASE JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabaseUrl = "https://ioxvbpthqdbodzrzoobk.supabase.co";
+const supabaseKey = "sb_publishable_N7JaJC0pBOqyl7cqHh8TYw_9YixTH1u";
+const supabase1 = supabase.createClient(supabaseUrl, supabaseKey);
+
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const mobile = document.getElementById("mobile").value;
+  const password = document.getElementById("password").value;
+
+  try {
+  const { data, error } = await supabase1
+    .from('admin1')
+    .select('*')
+    .eq('mnumber', Number(mobile))
+    .eq('password', password)
+    .limit(1)
+    .single();
+
+  const errorBox = document.getElementById("errorBox");
+  const errorText = document.getElementById("errorText");
+
+  if(error || !data){
+    errorText.textContent = "Invalid mobile number or password";
+    errorBox.classList.remove("d-none");
+  } else {
+    localStorage.setItem("adminLoggedIn", "true");
+    window.location.href = "dashboard.html";
+  }
+  } catch(err) {
+  console.error("Login error:", err);
+  }
+});
+</script>
+
+</body>
+</html>
